@@ -1,0 +1,22 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: set12-web
+  labels:
+    app: set12-web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: set12-web
+  template:
+    metadata:
+      labels:
+        app: set12-web
+    spec:
+      containers:
+        - name: web
+          image: DOCKERHUB_USERNAME/set12-web:latest
+          ports:
+            - containerPort: 80
