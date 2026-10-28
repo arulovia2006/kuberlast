@@ -30,7 +30,18 @@ pipeline {
                         passwordVariable: 'DOCKER_PASSWORD'
                     )
                 ]) {
-                    bat 'docker login --username "%DOCKER_USER%" --password-stdin'
+                    powershell '''
+                        if ([string]::IsNullOrWhiteSpace($env:DOCKER_PASSWORD)) {
+                            throw "Docker Hub password is empty. Check Jenkins credential set12-dockerhub."
+                        }
+
+                        $env:DOCKER_PASSWORD |
+                            docker login --username $env:DOCKER_USER --password-stdin
+
+                        if ($LASTEXITCODE -ne 0) {
+                            throw "Docker Hub login failed."
+                        }
+                    '''
                 }
             }
         }
@@ -61,11 +72,9 @@ pipeline {
         success {
             echo 'SUCCESS: Docker image built, pushed, and deployed!'
         }
-
         failure {
             echo 'FAILED: Check the Console Output for the stage error.'
         }
-
         always {
             echo 'Set 12 CI/CD pipeline execution finished.'
         }
