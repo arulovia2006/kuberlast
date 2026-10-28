@@ -30,15 +30,7 @@ pipeline {
                         passwordVariable: 'DOCKER_PASSWORD'
                     )
                 ]) {
-                    powershell '''
-                        $env:DOCKER_PASSWORD | docker login `
-                            --username $env:DOCKER_USER `
-                            --password-stdin
-
-                        if ($LASTEXITCODE -ne 0) {
-                            throw "Docker Hub login failed"
-                        }
-                    '''
+                    bat 'docker login --username "%DOCKER_USER%" --password-stdin'
                 }
             }
         }
@@ -72,6 +64,10 @@ pipeline {
 
         failure {
             echo 'FAILED: Check the Console Output for the stage error.'
+        }
+
+        always {
+            echo 'Set 12 CI/CD pipeline execution finished.'
         }
     }
 }
